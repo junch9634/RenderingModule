@@ -1,7 +1,7 @@
 # RenderingModule
 ## Installation
 ### Windows
-* python3.6
+* python 3.6
 * blender 2.79
 * blender module
 <pre>
@@ -49,3 +49,5 @@ $ make install</code>
 $ cd ~/blender-git/build_custom/bin</code>
 </pre>
 6. copy bpy.so in <code> "/home/$USER NAME$/blender-git/build_custom/bin" </code> and 2.79 directory and paste into your python 3.x/site-packages directory <code> "/home/$USER NAME$/Anaconda3/envs/$YOUR VIRTUAL ENVIRONMENT NAME$/lib/python3.7/site-packages" </code>
+
+## Parameter
