@@ -80,3 +80,6 @@ $ cd ~/blender-git/build_custom/bin</code>
 
 ## Result Example
 <img src="/result/result.png" width="256px" height="256px" title="result example" alt="result example"></img>
+
+# Issues
+* 체결 부품 Rendering시, Stefan 체결부품의 CAD 파일 자체가 실제와 유사하지 않아(ex. 나사선) 조립설명서와 같은 모양의 Rendering 이미지를 생성하기는 어렵다.
