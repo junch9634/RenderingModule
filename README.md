@@ -79,4 +79,4 @@ $ cd ~/blender-git/build_custom/bin</code>
 * obj1_scale : Object scale(x, y, z)
 
 ## Result Example
-![Alt text](/result/result.png)
+<img src="/result/result.png" width="256px" height="256px" title="result example" alt="result example"></img>
