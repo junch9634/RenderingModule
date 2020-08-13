@@ -30,14 +30,17 @@ theta = 0.0001  # Camera Location, theta(euler angle)
 phi = 0  # Camera Location, theta(euler angle)
 
 # object setting ===================================================== #
+name1 = '1.obj'
 obj1_location = [0, 0, 0]   # Object location (x, y, z)
 obj1_rotation = [0, 0, 0]   # Object rotation (x-axis, y-axis, z-axis)
 obj1_color = [1, 1, 1]  # Object mask color (R, G, B), (1, 1, 1 = white)
 obj1_scale = [1, 1, 1]  # Object scale (x, y, z)
-# obj2_location = [0, 0, 0]
-# obj2_rotation = [0, 0, 0]
-# obj2_color = [1, 1, 1]  #white
-# obj2_scale = [1, 1, 1]
+name2 = '2.obj'
+obj2_location = [0, 0, 0]
+obj2_rotation = [0, 0, 0]
+obj2_color = [1, 1, 1]
+obj2_scale = [1, 1, 1]
+# If you want to arrange more obj, add obj3, obj4, ...
 
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++=+++++++++++++
 
@@ -244,6 +247,18 @@ class Camera:
 # ==================================================================== #
 
 
+# Class of camera ==================================================== #
+def obj_set(name, need_normal, obj_location, obj_rotation, obj_color, obj_scale):
+    if need_normal == True:
+        pre_obj(name)
+    obj1 = Object(name, obj, obj_data)
+    obj1.location(obj_location[0], obj_location[1], obj_location[2])  # Location (x, y, z)
+    obj1.rotation(obj_rotation[0], obj_rotation[1], obj_rotation[2])  # Rotation (x-axis, y-axis, z-axis)
+    obj1.color(obj_color[0], obj_color[1], obj_color[2])  # color (R, G, B)
+    obj1.scale(obj_scale[0], obj_scale[1], obj_scale[2])  # scale (x, y, z)
+# ==================================================================== #
+
+
 zero(my_dpi)
 #Set the light, RECOMMENDED TYPE :  SUN or POINT 
 bpy.ops.object.lamp_add(type='SUN', location=(5,2,1))
@@ -261,23 +276,10 @@ obj = []
 obj_data = []
 n = [0]
 
-name1 = '1.obj'
-if need_normal == True:
-    pre_obj(name1)
-obj1 = Object(name1, obj, obj_data)
-obj1.location(obj1_location[0], obj1_location[1], obj1_location[2])     # Location (x, y, z)
-obj1.rotation(obj1_rotation[0], obj1_rotation[1], obj1_rotation[2])     # Rotation (x-axis, y-axis, z-axis)
-obj1.color(obj1_color[0], obj1_color[1], obj1_color[2])     # color (R, G, B)
-obj1.scale(obj1_scale[0], obj1_scale[1], obj1_scale[2])     # scale (x, y, z)
 
-# name2 = ''
-# if need_normal == True:
-#     pre_obj(name2)
-# obj2 = Object(name2, obj, obj_data)   #second obj
-# obj2.location(obj2_location[0], obj2_location[1], obj2_location[2])     # Location (x, y, z)
-# obj2.rotation(obj2_rotation[0], obj2_rotation[1], obj2_rotation[2])     # Rotation (x-axis, y-axis, z-axis)
-# obj2.color(obj2_color[0], obj2_color[1], obj2_color[2])     # color (R, G, B)
-# obj2.scale(obj2_scale[0], obj2_scale[1], obj2_scale[2])     # scale (x, y, z)
+obj_set(name1, need_normal, obj1_location, obj1_rotation, obj1_color, obj1_scale)
+obj_set(name2, need_normal, obj1_location, obj1_rotation, obj1_color, obj1_scale)
+# If you want to arrange more obj, add obj_set(name3, ...), obj_set(name4, ...), ...
 
 bpy.context.scene.world.horizon_color = (0, 0, 0)  # the color of background when 'mask'
 
