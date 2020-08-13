@@ -267,6 +267,7 @@ bpy.ops.object.lamp_add(type='SUN', location=(5,2,1))
 bpy.context.scene.world.light_settings.use_environment_light = True
 bpy.context.scene.world.horizon_color = (0, 0, 0)  # the color of background
 
+
 # Camera setting
 cam = Camera(option)   # 'PERSP: perspective', 'ORTHO: orthogonal'
 cam.intrinsic(FOV, 0, 0)    # (FOV: 60 is optimized by tuning, shift_x, shift_y)
@@ -276,12 +277,9 @@ obj = []
 obj_data = []
 n = [0]
 
-
 obj_set(name1, need_normal, obj1_location, obj1_rotation, obj1_color, obj1_scale)
 obj_set(name2, need_normal, obj1_location, obj1_rotation, obj1_color, obj1_scale)
 # If you want to arrange more obj, add obj_set(name3, ...), obj_set(name4, ...), ...
-
-bpy.context.scene.world.horizon_color = (0, 0, 0)  # the color of background when 'mask'
 
 # Save and show Image
 render_pass(n)
