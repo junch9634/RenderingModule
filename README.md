@@ -51,3 +51,24 @@ $ cd ~/blender-git/build_custom/bin</code>
 6. copy bpy.so in <code> "/home/$USER NAME$/blender-git/build_custom/bin" </code> and 2.79 directory and paste into your python 3.x/site-packages directory <code> "/home/$USER NAME$/Anaconda3/envs/$YOUR VIRTUAL ENVIRONMENT NAME$/lib/python3.7/site-packages" </code>
 
 ## Parameter
+### Path Setting
+* root_path : folder root path
+* obj_path : input CAD file(obj) path
+* save_path : output img path
+* save_name : output img name
+### Input, Output Setting
+* need_normal : import and export the obj in blender(when obj has no normal information)
+>  => If obj file hasn't normal information, It will raise error(Nonetype).
+* size : output img size
+### Camera Setting : Camera always looks at the origin.
+* option : 'PERSP': perspective, 'ORTHO': orthogonal
+* FOV : Camera FOV (60 is as close as possible to the assembly instructions)
+* radius : Camera Location, distance from origin
+* theta : Camera Location, theta(euler angle)
+>  => If theta is zero, It has issue that the camera turns upside down. So when you want to 0, it is recommended to use a value that is as close to 0 as possible.
+* phi : Camera Location, theta(euler angle)
+### Object Setting
+* obj1_location : Object location(x, y, z)
+* obj1_rotation : Object rotation(x-axis, y-axis, z-axis) - Based on the axis of the object itself
+* obj1_color : Object color(R, G, B)
+* obj1_scale : Object scale(x, y, z)
