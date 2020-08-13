@@ -50,6 +50,11 @@ $ cd ~/blender-git/build_custom/bin</code>
 </pre>
 6. copy bpy.so in <code> "/home/$USER NAME$/blender-git/build_custom/bin" </code> and 2.79 directory and paste into your python 3.x/site-packages directory <code> "/home/$USER NAME$/Anaconda3/envs/$YOUR VIRTUAL ENVIRONMENT NAME$/lib/python3.7/site-packages" </code>
 
+## Rendering
+<pre>
+<code>python rendermodule.py</code>
+</pre>
+
 ## Parameter
 ### Path Setting
 * root_path : folder root path
@@ -72,3 +77,6 @@ $ cd ~/blender-git/build_custom/bin</code>
 * obj1_rotation : Object rotation(x-axis, y-axis, z-axis) - Based on the axis of the object itself
 * obj1_color : Object color(R, G, B)
 * obj1_scale : Object scale(x, y, z)
+
+## Result Example
+![Alt text](/result/result.png)
