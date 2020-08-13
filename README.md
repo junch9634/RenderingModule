@@ -73,10 +73,11 @@ $ cd ~/blender-git/build_custom/bin</code>
 >  => If theta is zero, It has issue that the camera turns upside down. So when you want to 0, it is recommended to use a value that is as close to 0 as possible.
 * phi : Camera Location, theta(euler angle)
 ### Object Setting
-* obj1_location : Object location(x, y, z)
-* obj1_rotation : Object rotation(x-axis, y-axis, z-axis) - Based on the axis of the object itself
-* obj1_color : Object color(R, G, B)
-* obj1_scale : Object scale(x, y, z)
+* obj_location : Object location(x, y, z)
+* obj_rotation : Object rotation(x-axis, y-axis, z-axis) - Based on the axis of the object itself
+* obj_color : Object color(R, G, B)
+* obj_scale : Object scale(x, y, z)
+* name = [] : List of obj name, must match the number of objs.
 
 ## Result Example
 <img src="/result/result.png" width="256px" height="256px" title="result example" alt="result example"></img>
