@@ -7,9 +7,14 @@ import tempfile
 from PIL import Image
 from helper_functies import *
 import cv2
+import argparse
 
 tmpdir = tempfile.TemporaryDirectory()
 my_dpi = 96  # Afhankelijk van monitor #96
+
+arg = argparse.ArgumentParser()
+arg.add_argument('--json', default = None,help = 'setting json file')
+arg = arg.parse_args()
 
 # Parameter Setting ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # path setting ======================================================== #
@@ -19,13 +24,13 @@ save_path = root_path + 'result\\'  # output img save path
 save_name = "result.png"    # output img save name
 
 # Input, Output =============================================================== #
-need_normal = True      # import and export the obj in blender(when obj has no normal information)
-size = [512, 512]       # output img size
+part = '0'
+size = [1024, 1024]       # output img size
 
 # camera setting ===================================================== #
 option = 'PERSP'    # Camera option 'PERSP': perspective, 'ORTHO': orthogonal
 FOV = 60   # Camera focal length
-redius = 2  # Camera Location, distance from origin
+radius = 2  # Camera Location, distance from origin
 theta = 0.0001  # Camera Location, theta(euler angle)
 phi = 0  # Camera Location, theta(euler angle)
 
@@ -38,16 +43,56 @@ obj1_scale = [1, 1, 1]  # Object scale (x, y, z)
 name2 = '2.obj'
 obj2_location = [0, 0, 0]
 obj2_rotation = [0, 0, 0]
-obj2_color = [1, 1, 1]
+obj2_color = [1, 0, 1]
 obj2_scale = [1, 1, 1]
-# If you want to arrange more obj, add obj3, obj4, ...
-
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++=+++++++++++++
 
+if arg.json:
+    setting = arg.json
+else:
+    ###### Example of json ######
+    setting = {'object': [
+        {'name': name1,
+         'location': obj1_location,
+         'rotation':obj1_rotation,
+         'color': obj1_color,
+         'scale': obj1_scale
+         },
+        {'name': name2,
+         'location': obj2_location,
+         'rotation': obj2_rotation,
+         'color': obj2_color,
+         'scale': obj2_scale
+         }
+        ],
+        'camera': {
+            'option': option,
+            'fov': FOV,
+            'radius': radius,
+            'theta': theta,
+            'phi': phi
+        },
+        'input': {
+            'part': part
+        },
+        'output': {
+            'size': size
+        },
+        'path': {
+            'root_path': root_path,
+            'obj_path': obj_path,
+            'save_path': save_path,
+            'save_name': save_name
+        }
+    }
+
+
+
 # Preprocess of an obj =============================================== #
+
 def pre_obj(name):
     # Import an original obj file
-    file_path = obj_path + name
+    file_path = setting['path']['obj_path'] + name
     imp_file_path = file_path.split('.')[0] + '_old.obj'
     try:
         os.remove(imp_file_path)
@@ -78,7 +123,7 @@ def pre_obj(name):
 class Object:
     def __init__(self, name, obj, obj_data):
         # Re-Import the converted obj file
-        file_loc = obj_path + name
+        file_loc = setting['path']['obj_path'] + name
         bpy.ops.import_scene.obj(filepath=file_loc)
         self.object = bpy.context.selected_objects[0]
         self.object_data = bpy.data.objects[self.object.name]
@@ -121,8 +166,8 @@ def get_img(tmpdir=tmpdir, size=size, save_loc=save_path):
 
     # Save a postprocessed image of wireframe
     if os.path.isfile("wireframe.png"):
-        img = cv2.imread(root_path+'wireframe.png')
-        cv2.imwrite(os.path.join(root_path, "result.png"), img)
+        img = cv2.imread(setting['path']['root_path'] +'wireframe.png')
+        cv2.imwrite(os.path.join(setting['path']['root_path'], "result.png"), img)
         cv2.waitKey(0)
         os.remove('wireframe.png')
         return img
@@ -177,7 +222,7 @@ class Freestyle_info:
 
 
 # rendering each mode ================================================ #
-def render_pass(n):
+def render_pass(n, part):
     # Set a standard mode
     bpy.context.scene.render.use_freestyle = False
     bpy.context.scene.render.use_edge_enhance = False
@@ -194,10 +239,12 @@ def render_pass(n):
     sceneR.render.use_freestyle = True
     freestyle.linesets.active_index = 0
     bpy.ops.scene.freestyle_lineset_remove()
-
-    Freestyle_info(name='outline', contour=True, thickness=3.0)  # Outline
-    Freestyle_info(name='details', silhouette=True, crease=True, border=True, thickness=1.7)    # inline
-    return
+    if part == '0':
+        Freestyle_info(name='outline', contour=True, thickness=3.0)  # Outline
+        Freestyle_info(name='details', silhouette=True, crease=True, border=True, thickness=1.7)    # inline
+    elif part == '1':
+        Freestyle_info(name="outline", crease=True, crease_angle=165, external_contour=True, thickness=4)  # Outline
+        Freestyle_info(name="details", thickness=4, crease_angle=165, silhouette=True, crease=True, border=True)  # Inline
 # ==================================================================== #
 
 
@@ -252,10 +299,10 @@ def obj_set(name, need_normal, obj_location, obj_rotation, obj_color, obj_scale)
     if need_normal == True:
         pre_obj(name)
     obj1 = Object(name, obj, obj_data)
-    obj1.location(obj_location[0], obj_location[1], obj_location[2])  # Location (x, y, z)
-    obj1.rotation(obj_rotation[0], obj_rotation[1], obj_rotation[2])  # Rotation (x-axis, y-axis, z-axis)
-    obj1.color(obj_color[0], obj_color[1], obj_color[2])  # color (R, G, B)
-    obj1.scale(obj_scale[0], obj_scale[1], obj_scale[2])  # scale (x, y, z)
+    obj1.location(setting['object']['location'][0], setting['object']['location'][1], setting['object']['location'][2])  # Location (x, y, z)
+    obj1.rotation(setting['object']['rotation'][0], setting['object']['rotation'][1], setting['object']['rotation'][2])  # Rotation (x-axis, y-axis, z-axis)
+    obj1.color(setting['object']['color'][0], setting['object']['color'][1], setting['object']['color'][2])  # color (R, G, B)
+    obj1.scale(setting['object']['scale'][0], setting['object']['scale'][1], setting['object']['scale'][2])  # scale (x, y, z)
 # ==================================================================== #
 
 
@@ -269,19 +316,18 @@ bpy.context.scene.world.horizon_color = (0, 0, 0)  # the color of background
 
 
 # Camera setting
-cam = Camera(option)   # 'PERSP: perspective', 'ORTHO: orthogonal'
-cam.intrinsic(FOV, 0, 0)    # (FOV: 60 is optimized by tuning, shift_x, shift_y)
-cam.pos(redius, theta, phi)  # (radius, theta, phi)
+cam = Camera(setting['camera']['option'])   # 'PERSP: perspective', 'ORTHO: orthogonal'
+cam.intrinsic(setting['camera']['fov'], 0, 0)    # (FOV: 60 is optimized by tuning, shift_x, shift_y)
+cam.pos(setting['camera']['radius'], setting['camera']['theta'], setting['camera']['phi'])  # (radius, theta, phi)
 
 obj = []
 obj_data = []
 n = [0]
-
-obj_set(name1, need_normal, obj1_location, obj1_rotation, obj1_color, obj1_scale)
-obj_set(name2, need_normal, obj1_location, obj1_rotation, obj1_color, obj1_scale)
+for i in range(len(setting['object'])):
+    obj_set(setting['object'][i]['name'], True, setting['object'][i]['location'], setting['object'][i]['rotation'], setting['object'][i]['color'], setting['object'][i]['scale'])
 # If you want to arrange more obj, add obj_set(name3, ...), obj_set(name4, ...), ...
 
 # Save and show Image
-render_pass(n)
-get_img(size=size, save_loc=save_path + save_name)
+render_pass(n, setting['input']['part'])
+get_img(size=setting['output']['size'], save_loc=setting['path']['save_path'] + setting['path']['save_name'])
 tmpdir.cleanup()
