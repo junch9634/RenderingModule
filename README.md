@@ -130,3 +130,4 @@ You can set parameters by JSON file
 
 # Issues
 * 체결 부품(connector part) Rendering시, Stefan 체결부품의 CAD 파일 자체가 실제와 유사하지 않아(ex. 나사선) 조립설명서와 같은 모양의 Rendering 이미지를 생성하기는 어렵다.
+* 가구 부품과 체결부품의 rendering 할 시에 선 굵기 등의 디테일이 달라 part=0, 1로 분리시켰다.
