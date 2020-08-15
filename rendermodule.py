@@ -11,6 +11,10 @@ import argparse
 
 tmpdir = tempfile.TemporaryDirectory()
 my_dpi = 96  # Afhankelijk van monitor #96
+need_normal = True
+obj = []
+obj_data = []
+n = [0]
 
 arg = argparse.ArgumentParser()
 arg.add_argument('--json', default = None,help = 'setting json file')
@@ -24,7 +28,7 @@ save_path = root_path + 'result\\'  # output img save path
 save_name = "result.png"    # output img save name
 
 # Input, Output =============================================================== #
-part = '0'
+part = '1'
 size = [1024, 1024]       # output img size
 
 # camera setting ===================================================== #
@@ -196,7 +200,7 @@ class Freestyle_info:
     def __init__(self, name, select_by_visibility=True, select_by_edge_types=True, select_by_face_marks=False,
                  select_by_group=False, select_by_image_border=True, silhouette=False, edge_mark=False,
                  crease=False, border=False, contour=False, suggestive_contour=False, ridge_valley=False,
-                 external_contour=False, material_boundary=False, thickness=2):
+                 external_contour=False, material_boundary=False, thickness=0, crease_angle=0):
         self = bpy.context.scene.render.layers.active.freestyle_settings.linesets.new(name)
 
         # Refer to each function on the site.
@@ -295,14 +299,19 @@ class Camera:
 
 
 # Class of camera ==================================================== #
-def obj_set(name, need_normal, obj_location, obj_rotation, obj_color, obj_scale):
-    if need_normal == True:
-        pre_obj(name)
-    obj1 = Object(name, obj, obj_data)
-    obj1.location(setting['object']['location'][0], setting['object']['location'][1], setting['object']['location'][2])  # Location (x, y, z)
-    obj1.rotation(setting['object']['rotation'][0], setting['object']['rotation'][1], setting['object']['rotation'][2])  # Rotation (x-axis, y-axis, z-axis)
-    obj1.color(setting['object']['color'][0], setting['object']['color'][1], setting['object']['color'][2])  # color (R, G, B)
-    obj1.scale(setting['object']['scale'][0], setting['object']['scale'][1], setting['object']['scale'][2])  # scale (x, y, z)
+def obj_set(setting, need_normal):
+    def obj_set(setting, i, need_normal):
+        if need_normal == True:
+            pre_obj(setting['object'][i]['name'])
+        obj1 = Object(setting['object'][i]['name'], obj, obj_data)
+        obj1.location(setting['object'][i]['location'][0], setting['object'][i]['location'][1],
+                      setting['object'][i]['location'][2])  # Location (x, y, z)
+        obj1.rotation(setting['object'][i]['rotation'][0], setting['object'][i]['rotation'][1],
+                      setting['object'][i]['rotation'][2])  # Rotation (x-axis, y-axis, z-axis)
+        obj1.color(setting['object'][i]['color'][0], setting['object'][i]['color'][1],
+                   setting['object'][i]['color'][2])  # color (R, G, B)
+        obj1.scale(setting['object'][i]['scale'][0], setting['object'][i]['scale'][1],
+                   setting['object'][i]['scale'][2])  # scale (x, y, z)
 # ==================================================================== #
 
 
@@ -320,12 +329,9 @@ cam = Camera(setting['camera']['option'])   # 'PERSP: perspective', 'ORTHO: orth
 cam.intrinsic(setting['camera']['fov'], 0, 0)    # (FOV: 60 is optimized by tuning, shift_x, shift_y)
 cam.pos(setting['camera']['radius'], setting['camera']['theta'], setting['camera']['phi'])  # (radius, theta, phi)
 
-obj = []
-obj_data = []
-n = [0]
+
 for i in range(len(setting['object'])):
-    obj_set(setting['object'][i]['name'], True, setting['object'][i]['location'], setting['object'][i]['rotation'], setting['object'][i]['color'], setting['object'][i]['scale'])
-# If you want to arrange more obj, add obj_set(name3, ...), obj_set(name4, ...), ...
+    obj_set(setting, need_normal)
 
 # Save and show Image
 render_pass(n, setting['input']['part'])
