@@ -54,6 +54,49 @@ $ cd ~/blender-git/build_custom/bin</code>
 <pre>
 <code>python rendermodule.py</code>
 </pre>
+You can set parameters in 'rendermodule.py'
+<pre>
+<code>python rendermodule.py --json YOUR_JSON_FILE_PATH</code>
+</pre>
+You can set parameters by JSON file
+
+## JSON(INPUT)
+    setting = {'object': [
+        {'name': name1,
+         'location': obj1_location,
+         'rotation':obj1_rotation,
+         'color': obj1_color,
+         'scale': obj1_scale
+         },
+        {'name': name2,
+         'location': obj2_location,
+         'rotation': obj2_rotation,
+         'color': obj2_color,
+         'scale': obj2_scale
+         }
+        ],
+        'camera': {
+            'option': option,
+            'fov': FOV,
+            'radius': radius,
+            'theta': theta,
+            'phi': phi
+        },
+        'input': {
+            'part': part
+        },
+        'output': {
+            'size': size
+        },
+        'path': {
+            'root_path': root_path,
+            'obj_path': obj_path,
+            'save_path': save_path,
+            'save_name': save_name
+        }
+    }
+
+**You can see detail example in 'rendermodule.py'**
 
 ## Parameter
 ### Path Setting
@@ -62,8 +105,8 @@ $ cd ~/blender-git/build_custom/bin</code>
 * save_path : output img path
 * save_name : output img name
 ### Input, Output Setting
-* need_normal : import and export the obj in blender(when obj has no normal information)
->  => If obj file hasn't normal information, It will raise error(Nonetype).
+* part : rendering mode according to '0' = furniture part, '1' = connector part
+>  => You can change rendering detail at declare the freestyle_info
 * size : output img size
 ### Camera Setting : Camera always looks at the origin.
 * option : 'PERSP': perspective, 'ORTHO': orthogonal
@@ -73,11 +116,12 @@ $ cd ~/blender-git/build_custom/bin</code>
 >  => If theta is zero, It has issue that the camera turns upside down. So when you want to 0, it is recommended to use a value that is as close to 0 as possible.
 * phi : Camera Location, theta(euler angle)
 ### Object Setting
+* name : obj file name (X.obj)
 * obj_location : Object location(x, y, z)
 * obj_rotation : Object rotation(x-axis, y-axis, z-axis) - Based on the axis of the object itself
 * obj_color : Object color(R, G, B)
 * obj_scale : Object scale(x, y, z)
-* name = [] : List of obj name, must match the number of objs.
+
 
 ## Result Example
 <img src="/result/result.png" width="256px" height="256px" title="result example" alt="result example"></img>
@@ -85,4 +129,4 @@ $ cd ~/blender-git/build_custom/bin</code>
 
 
 # Issues
-* 체결 부품 Rendering시, Stefan 체결부품의 CAD 파일 자체가 실제와 유사하지 않아(ex. 나사선) 조립설명서와 같은 모양의 Rendering 이미지를 생성하기는 어렵다.
+* 체결 부품(connector part) Rendering시, Stefan 체결부품의 CAD 파일 자체가 실제와 유사하지 않아(ex. 나사선) 조립설명서와 같은 모양의 Rendering 이미지를 생성하기는 어렵다.
