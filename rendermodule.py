@@ -220,7 +220,7 @@ class Freestyle_info:
         self.select_ridge_valley = ridge_valley
         self.select_external_contour = external_contour
         self.select_material_boundary = material_boundary
-
+        bpy.context.screen.scene.render.layers.active.freestyle_settings.crease_angle = math.radians(crease_angle)
         self.linestyle.thickness = thickness
 # ==================================================================== #
 
