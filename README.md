@@ -30,7 +30,8 @@ $ svn checkout https://svn.blender.org/svnroot/bf-blender/trunk/lib/linux_centos
 </pre>
 3. Blender version change and update
 <pre>
-<code>$ git checkout blender2.7
+<code>$ cd ~/blender-git/blender
+$ git checkout blender2.7
 $ git submodule update --init --recursive
 $ git submodule foreach git checkout master
 $ git submodule foreach git pull --rebase origin master
