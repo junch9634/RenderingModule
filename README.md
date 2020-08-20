@@ -46,8 +46,7 @@ $ make install</code>
 </pre>
 5. Copy and paste the specific build directory (i.e., 2.79) and dynamic library (i.e., .so) 
 <pre>
-<code>$ mkdir ~/blender-git
-$ cd ~/blender-git/build_custom/bin</code>
+<code>$ cd ~/blender-git/build_custom/bin</code>
 </pre>
 6. copy bpy.so in <code> "/home/$USER NAME$/blender-git/build_custom/bin" </code> and 2.79 directory and paste into your python 3.x/site-packages directory <code> "/home/$USER NAME$/Anaconda3/envs/$YOUR VIRTUAL ENVIRONMENT NAME$/lib/python3.7/site-packages" </code>
 
