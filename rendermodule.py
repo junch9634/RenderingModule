@@ -196,7 +196,37 @@ def get_img(tmpdir=tmpdir, size=size, save_loc=save_path):
 
 
 # Freestyle information ============================================== #
-class Freestyle_info:
+class Freestyle_part:
+    def __init__(self, name, select_by_visibility=True, select_by_edge_types=True, select_by_face_marks=False,
+                 select_by_group=False, select_by_image_border=True, silhouette=False, edge_mark=False,
+                 crease=False, border=False, contour=False, suggestive_contour=False, ridge_valley=False,
+                 external_contour=False, material_boundary=False, thickness=0):
+        self = bpy.context.scene.render.layers.active.freestyle_settings.linesets.new(name)
+
+        # Refer to each function on the site.
+        # http://builder.openhmd.net/blender-hmd-viewport-temp/render/freestyle/parameter_editor/line_set.html
+        self.select_by_visibility = select_by_visibility
+        self.select_by_edge_types = select_by_edge_types
+        self.select_by_face_marks = select_by_face_marks
+        self.select_by_group = select_by_group
+        self.select_by_image_border = select_by_image_border
+
+        self.select_silhouette = silhouette
+        self.select_edge_mark = edge_mark
+        self.select_crease = crease
+        self.select_border = border
+        self.select_contour = contour
+        self.select_suggestive_contour = suggestive_contour
+        self.select_ridge_valley = ridge_valley
+        self.select_external_contour = external_contour
+        self.select_material_boundary = material_boundary
+
+        self.linestyle.thickness = thickness
+# ==================================================================== #
+
+
+# Freestyle information ============================================== #
+class Freestyle_connector:
     def __init__(self, name, select_by_visibility=True, select_by_edge_types=True, select_by_face_marks=False,
                  select_by_group=False, select_by_image_border=True, silhouette=False, edge_mark=False,
                  crease=False, border=False, contour=False, suggestive_contour=False, ridge_valley=False,
@@ -244,11 +274,11 @@ def render_pass(n, part):
     freestyle.linesets.active_index = 0
     bpy.ops.scene.freestyle_lineset_remove()
     if part == '0':
-        Freestyle_info(name='outline', contour=True, thickness=3.0)  # Outline
-        Freestyle_info(name='details', silhouette=True, crease=True, border=True, thickness=1.7)    # inline
+        Freestyle_part(name='outline', contour=True, thickness=3.0)  # Outline
+        Freestyle_part(name='details', silhouette=True, crease=True, border=True, thickness=1.7)    # inline
     elif part == '1':
-        Freestyle_info(name="outline", crease=True, crease_angle=165, external_contour=True, thickness=4)  # Outline
-        Freestyle_info(name="details", thickness=4, crease_angle=165, silhouette=True, crease=True, border=True)  # Inline
+        Freestyle_connector(name="outline", crease=True, crease_angle=165, external_contour=True, thickness=4)  # Outline
+        Freestyle_connector(name="details", thickness=4, crease_angle=165, silhouette=True, crease=True, border=True)  # Inline
 # ==================================================================== #
 
 
@@ -316,7 +346,7 @@ def obj_set(setting, need_normal):
 
 
 zero(my_dpi)
-#Set the light, RECOMMENDED TYPE :  SUN or POINT 
+#Set the light, RECOMMENDED TYPE :  SUN or POINT
 bpy.ops.object.lamp_add(type='SUN', location=(5,2,1))
 
 # Set the environment lighting and the color of background
