@@ -13,11 +13,10 @@ tmpdir = tempfile.TemporaryDirectory()
 my_dpi = 96  # Afhankelijk van monitor #96
 need_normal = True
 obj = []
-obj_data = []
 n = [0]
 
 arg = argparse.ArgumentParser()
-arg.add_argument('--json', default = None,help = 'setting json file')
+arg.add_argument('--json', default=None, help='setting json file')
 arg = arg.parse_args()
 
 # Parameter Setting ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -52,7 +51,8 @@ obj2_scale = [1, 1, 1]
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++=+++++++++++++
 
 if arg.json:
-    setting = arg.json
+    with open('setting.json', 'r') as f:
+        setting = json.load(f)
 else:
     ###### Example of json ######
     setting = {'object': [
@@ -125,7 +125,7 @@ def pre_obj(name):
 
 # Class of objects =================================================== #
 class Object:
-    def __init__(self, name, obj, obj_data):
+    def __init__(self, name, obj):
         # Re-Import the converted obj file
         file_loc = setting['path']['obj_path'] + name
         bpy.ops.import_scene.obj(filepath=file_loc)
@@ -141,7 +141,6 @@ class Object:
         self.object.scale = (0, 0, 0)
 
         obj.append(self.object)
-        obj_data.append(bpy.data.objects[self.object.name])
         n[0] += 1
 
     def location(self, x, y, z):
@@ -255,14 +254,26 @@ class Freestyle_connector:
 # ==================================================================== #
 
 
+
 # rendering each mode ================================================ #
-def render_pass(n, part):
+
+def render_mask():
+    # Set a standard mode
+    bpy.context.scene.render.use_freestyle = False
+    bpy.context.scene.render.use_edge_enhance = False
+    bpy.context.scene.render.use_antialiasing = False
+    bpy.context.scene.world.horizon_color = (0, 0, 0)
+
+
+def render_wireframe(n, obj, part):
     # Set a standard mode
     bpy.context.scene.render.use_freestyle = False
     bpy.context.scene.render.use_edge_enhance = False
 
     # Set the color of the background and object to white
     bpy.context.scene.world.horizon_color = (1, 1, 1)
+    bpy.context.scene.render.use_antialiasing = True
+
     for i in range(0, n[0]):
         obj[i].active_material.diffuse_color = (1, 1, 1)
         obj[i].active_material.diffuse_intensity = 0
@@ -273,12 +284,55 @@ def render_pass(n, part):
     sceneR.render.use_freestyle = True
     freestyle.linesets.active_index = 0
     bpy.ops.scene.freestyle_lineset_remove()
+
     if part == '0':
         Freestyle_part(name='outline', contour=True, thickness=3.0)  # Outline
         Freestyle_part(name='details', silhouette=True, crease=True, border=True, thickness=1.7)    # inline
     elif part == '1':
         Freestyle_connector(name="outline", crease=True, crease_angle=165, external_contour=True, thickness=4)  # Outline
         Freestyle_connector(name="details", thickness=4, crease_angle=165, silhouette=True, crease=True, border=True)  # Inline
+
+
+def render_normal(n, obj):
+    # Set a standard mode
+    bpy.context.scene.render.use_freestyle = False
+    bpy.context.scene.render.use_edge_enhance = False
+    bpy.context.scene.world.horizon_color = (128 / 255, 127 / 255, 254 / 255)  # the color of background
+    bpy.context.scene.render.use_antialiasing = False
+
+    bpy.ops.object.select_all(action='DESELECT')
+    bpy.ops.object.select_by_type(type='LAMP')
+    bpy.ops.object.delete()
+
+    realpath = r"C:\Users\GIST\Anaconda3\envs\lendering\mc23.jpg"
+
+    for i in range(0, n[0]):
+        obj[i].active_material.use_shadeless = True
+
+        try:
+            img = bpy.data.images.load(realpath)
+        except:
+            raise NameError("Cannot load image %s" % realpath)
+
+        # Create image texture from image
+        cTex = bpy.data.textures.new("NORMAL", type='IMAGE')
+        cTex.image = img
+
+        # Create material note that it is not same as the "texture"
+        mat = bpy.data.materials.new("NORMAL")
+
+        # Add texture slot for color texture
+        mat.use_shadeless = True
+        mtex = mat.texture_slots.add()
+        mtex.texture = cTex
+        mtex.texture_coords = 'NORMAL'
+
+
+        # assign material to object
+        obj[i].data.materials.append(mat)
+
+        # or overwrite an existing material slot via index operator
+        obj[i].data.materials[0] = mat
 # ==================================================================== #
 
 
@@ -329,41 +383,61 @@ class Camera:
 
 
 # Class of camera ==================================================== #
-def obj_set(setting, need_normal):
-    def obj_set(setting, i, need_normal):
-        if need_normal == True:
-            pre_obj(setting['object'][i]['name'])
-        obj1 = Object(setting['object'][i]['name'], obj, obj_data)
-        obj1.location(setting['object'][i]['location'][0], setting['object'][i]['location'][1],
-                      setting['object'][i]['location'][2])  # Location (x, y, z)
-        obj1.rotation(setting['object'][i]['rotation'][0], setting['object'][i]['rotation'][1],
-                      setting['object'][i]['rotation'][2])  # Rotation (x-axis, y-axis, z-axis)
-        obj1.color(setting['object'][i]['color'][0], setting['object'][i]['color'][1],
-                   setting['object'][i]['color'][2])  # color (R, G, B)
-        obj1.scale(setting['object'][i]['scale'][0], setting['object'][i]['scale'][1],
-                   setting['object'][i]['scale'][2])  # scale (x, y, z)
+def obj_set(setting, obj, i, need_normal):
+    if need_normal == True:
+        pre_obj(setting['object'][i]['name'])
+    obj = Object(setting['object'][i]['name'], obj)
+    obj.location(0, 0, 0)   # location initialize
+    obj.rotation(0, 0, 0)   # rotation initialize
+    obj.scale(1, 1, 1)      # scale initialize
+    obj.color(1, 1, 1)      # color initialize
+    obj.location(setting['object'][i]['location'][0], setting['object'][i]['location'][1],
+                  setting['object'][i]['location'][2])  # Location (x, y, z)
+    obj.rotation(setting['object'][i]['rotation'][0], setting['object'][i]['rotation'][1],
+                  setting['object'][i]['rotation'][2])  # Rotation (x-axis, y-axis, z-axis)
+    obj.color(setting['object'][i]['color'][0], setting['object'][i]['color'][1],
+               setting['object'][i]['color'][2])  # color (R, G, B)
+    obj.scale(setting['object'][i]['scale'][0], setting['object'][i]['scale'][1],
+               setting['object'][i]['scale'][2])  # scale (x, y, z)
 # ==================================================================== #
 
 
-zero(my_dpi)
-#Set the light, RECOMMENDED TYPE :  SUN or POINT
-bpy.ops.object.lamp_add(type='SUN', location=(5,2,1))
+class rendering_module():
+    def __init__(self):
+        pass
+    def initialize(self):
+        zero(my_dpi)
+        # Set the light, RECOMMENDED TYPE :  SUN or POINT
+        bpy.ops.object.lamp_add(type='SUN', location=(5, 2, 1))
 
-# Set the environment lighting and the color of background
-bpy.context.scene.world.light_settings.use_environment_light = True
-bpy.context.scene.world.horizon_color = (0, 0, 0)  # the color of background
+        bpy.data.scenes['Scene'].display_settings.display_device = 'None'
+
+        # Set the environment lighting and the color of background
+        bpy.context.scene.world.light_settings.use_environment_light = True
+
+        bpy.ops.object.select_by_type(type='MESH')
+        bpy.ops.object.delete()
+
+    def setting(self, setting):
+        # Camera setting
+        cam = Camera(setting['camera']['option'])   # 'PERSP: perspective', 'ORTHO: orthogonal'
+        cam.intrinsic(setting['camera']['fov'], 0, 0)    # (FOV: 60 is optimized by tuning, shift_x, shift_y)
+        cam.pos(setting['camera']['radius'], setting['camera']['theta'], setting['camera']['phi'])  # (radius, theta, phi)
+        for i in range(len(setting['object'])):
+            obj_set(setting, need_normal)
+
+    def render_image(self, setting):
+        # Save and show Image
+        render_mask()
+        get_img(size=setting['output']['size'], save_loc=setting['path']['save_path'] + setting['object'][0]['name'].split('.')[0] + '-mask.png')
+        render_wireframe(n, obj, setting['input']['part'])
+        get_img(size=setting['output']['size'], save_loc=setting['path']['save_path'] + setting['object'][0]['name'].split('.')[0] + '-wireframe.png')
+        render_normal(n, obj, setting['input']['part'])
+        get_img(size=setting['output']['size'], save_loc=setting['path']['save_path'] + setting['object'][0]['name'].split('.')[0] + '-normal.png')
+        tmpdir.cleanup()
 
 
-# Camera setting
-cam = Camera(setting['camera']['option'])   # 'PERSP: perspective', 'ORTHO: orthogonal'
-cam.intrinsic(setting['camera']['fov'], 0, 0)    # (FOV: 60 is optimized by tuning, shift_x, shift_y)
-cam.pos(setting['camera']['radius'], setting['camera']['theta'], setting['camera']['phi'])  # (radius, theta, phi)
-
-
-for i in range(len(setting['object'])):
-    obj_set(setting, need_normal)
-
-# Save and show Image
-render_pass(n, setting['input']['part'])
-get_img(size=setting['output']['size'], save_loc=setting['path']['save_path'] + setting['path']['save_name'])
-tmpdir.cleanup()
+rendering = rendering_module()
+rendering.initialize()
+rendering.setting(setting)
+rendering.render_image(setting)
