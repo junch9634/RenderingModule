@@ -51,7 +51,7 @@ obj2_scale = [1, 1, 1]
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++=+++++++++++++
 
 if arg.json:
-    with open('setting.json', 'r') as f:
+    with open('arg.json', 'r') as f:
         setting = json.load(f)
 else:
     ###### Example of json ######
