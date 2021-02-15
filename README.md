@@ -50,7 +50,7 @@ $ make install</code>
 </pre>
 6. copy bpy.so in <code> "/home/$USER NAME$/blender-git/build_custom/bin" </code> and 2.79 directory and paste into your python 3.x/site-packages directory <code> "/home/$USER NAME$/Anaconda3/envs/$YOUR VIRTUAL ENVIRONMENT NAME$/lib/python3.7/site-packages" </code>
 
-## Rendering
+## How To Run
 <pre>
 <code>python rendermodule.py</code>
 </pre>
@@ -129,11 +129,3 @@ You can set parameters by JSON file
 
 <img src="/result/result3.png" width="256px" height="256px" title="result example" alt="result example"></img>
 <img src="/result/result4.png" width="256px" height="256px" title="result example" alt="result example"></img>
-
-
-# Issues
-* 체결 부품(connector part) Rendering시, 대회측에서 제공받은 CAD 파일이 조립설명서상의 체결부품과 동일하지 않아(ex. 나사선) 렌더링된 이미지가 조립설명서와 차이가 있을 수 있습니다.
-* 가구 부품과 체결부품의 rendering 할 시에 선 굵기 등의 디테일이 달라 part=0, 1로 분리시켰습니다.
-<img src="/issue/Assembly_instruction.jpg" title="Assembly instruction" alt="Assembly instruction"></img>
-<img src="/issue/stefan_obj.png" title="stefan obj" alt="stefan obj"></img>
-
